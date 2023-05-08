@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
+import os
 import mongoengine
 from pathlib import Path
 
@@ -74,7 +75,7 @@ WSGI_APPLICATION = 'recruiter.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-mongoengine.connect(host='mongodb+srv://mongouser:mongoisbest@cluster0.9nbsswg.mongodb.net/?retryWrites=true&w=majority')
+mongoengine.connect(host=os.environ.get('MONGO_URI'))
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
