@@ -3,10 +3,10 @@ This repository is for recruiter API's
 
 For deploying on server.
 
-Create a virtaul environmret and activate it.
+1. Create a virtaul environmret and activate it.
 
-pip install -r requirements.txt
+2. pip install -r requirements.txt
 
-Use the environment variables provided before running the code.
+3. Use the environment variables provided before running the code.
 
-python manage.py runserver
+4. python manage.py runserver
