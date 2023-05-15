@@ -26,7 +26,9 @@ class CompanyInfo(APIView):
             return Response({"status": "failure", "status_code": "400", "error_code": "TA8001"})
         company = Company.objects.get(id=recruiter_id)
         serializer = CompanySerializer(company)
-        return Response({"status": "success", "status_code": "200", "data": serializer.data})
+        serializer_data = serializer.data
+        serializer_data.update({"logo_url": company.logo_url}) # Adding logo_url separately as it is not part of PUT call in serializer
+        return Response({"status": "success", "status_code": "200", "data": serializer_data})
     
     def put(self, request, *args, **kwargs):
         '''
@@ -40,6 +42,7 @@ class CompanyInfo(APIView):
             serializer.save()
             #return Response(data=serializer.data, status=HTTP_201_CREATED)
             responses_201["Data"]=serializer.data
+            responses_201["Message"]="Profile Updated successfully"
             return Response(responses_201)
         #return Response(data="Invalid Data", status=HTTP_400_BAD_REQUEST)
         responses_400["Error message"]="Data is not valid"
@@ -73,11 +76,9 @@ class CompanyLogo(APIView):
         company = Company.objects.get(id=id)
         company.logo_url = s3_url
         company.save()
-
-        response_data = {}
-        response_data["s3_url"] = s3_url
         
         response_data = {"status": "passed" ,"message":"Logo Uploaded Successfully"}
+        response_data["logo_url"] = s3_url
 
         return Response({"status": "success", "status_code": "200", "data": response_data})
     
