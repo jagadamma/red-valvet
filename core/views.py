@@ -60,7 +60,9 @@ class CompanyLogo(APIView):
         # Get the file from the request
         file = request.FILES['file']
 
-        s3_key = id
+        file_name = file.name
+
+        s3_key = id+'-'+file_name
         s3_bucket = S3_BUCKET_NAME
 
         # Upload file to S3
