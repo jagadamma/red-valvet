@@ -41,11 +41,11 @@ class CompanyInfo(APIView):
         if serializer.is_valid():
             serializer.save()
             #return Response(data=serializer.data, status=HTTP_201_CREATED)
-            responses_201["Data"]=serializer.data
-            responses_201["Message"]="Profile Updated successfully"
+            responses_201["data"]=serializer.data
+            responses_201["message"]="Profile Updated successfully"
             return Response(responses_201)
         #return Response(data="Invalid Data", status=HTTP_400_BAD_REQUEST)
-        responses_400["Error message"]="Data is not valid"
+        responses_400["error_message"]="Data is not valid"
         return Response(responses_400)
     
 class CompanyLogo(APIView):
