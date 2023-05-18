@@ -1,3 +1,6 @@
+import jsonschema
+from jsonschema import Draft7Validator, FormatChecker
+
 import boto3
 import os
 from botocore.exceptions import ClientError
@@ -6,6 +9,7 @@ from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from core.schema import SCHEMA1
 from core.models import Company
 from core.serializers import CompanySerializer
 from core.reponses import responses_200,responses_201,responses_400,responses_404
@@ -39,13 +43,26 @@ class CompanyInfo(APIView):
         company = Company.objects.get(id=data.get('id'))
         serializer = CompanySerializer(company, data=data)
         if serializer.is_valid():
-            serializer.save()
-            #return Response(data=serializer.data, status=HTTP_201_CREATED)
-            responses_201["data"]=serializer.data
-            responses_201["message"]="Profile Updated successfully"
-            return Response(responses_201)
+            myschema = SCHEMA1
+            v=Draft7Validator(schema=myschema,format_checker=FormatChecker())
+            if len(list(v.iter_errors(data)))!=0:
+                validation_errors = list(v.iter_errors(data))
+                errors=[]
+                for error in validation_errors:
+                    errors.append({
+                        'field': error.path[0] if error.path else '','message': error.message
+                    })  
+                #return Response({"status": "failure","status_code": "400", "error_code": "TA8001", "error_message": errors})
+                responses_400["Error Message"]=errors
+                return Response(responses_400)
+            else:
+                serializer.save()
+                #return Response(data=serializer.data, status=HTTP_201_CREATED)
+                responses_201["data"]=serializer.data
+                responses_201["message"]="Profile Updated successfully"
+                return Response(responses_201)
         #return Response(data="Invalid Data", status=HTTP_400_BAD_REQUEST)
-        responses_400["error_message"]="Data is not valid"
+        responses_400["error_message"]=serializer.errors
         return Response(responses_400)
     
 class CompanyLogo(APIView):
